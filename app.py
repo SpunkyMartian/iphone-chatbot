@@ -120,15 +120,16 @@ def get_ai_response(user_message):
         "presence_penalty": 0,
         "frequency_penalty": 1
     }
-
-    # Debug: Show the payload in the Streamlit app
-    st.write("Payload sent to Perplexity API:", payload)
     
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=30)
         if response.status_code == 200:
             response_data = response.json()
             return response_data['choices'][0]['message']['content']
+        elif response.status_code == 400:
+            st.error("API request failed with status code 400. See payload below:")
+            st.json(payload)
+            return f"Error: API request failed with status code 400"
         else:
             return f"Error: API request failed with status code {response.status_code}"
     except Exception as e:
