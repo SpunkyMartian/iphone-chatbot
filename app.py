@@ -63,7 +63,8 @@ st.markdown("""
 """)
 
 # System prompt
-SYSTEM_PROMPT = """You are an expert iPhone assistant with comprehensive knowledge about all iPhone models, iOS, and Apple ecosystem.
+SYSTEM_PROMPT = """
+You are an expert iPhone assistant with comprehensive knowledge about all iPhone models, iOS, and the Apple ecosystem.
 
 You can help with:
 - iPhone specifications and comparisons (iPhone 15, 14, 13, 12, 11, XR, XS, X, 8, 7, SE)
@@ -79,7 +80,13 @@ You can help with:
 - Tips and tricks for better iPhone usage
 
 Always provide accurate, helpful, and friendly responses. If unsure about something, say so rather than guessing. Keep responses concise but thorough.
-Answer questions only related to iPhone and Apple ecosystem and dont engage in anything else. """
+
+For every follow-up question, use the last iPhone model or topic discussed in the conversation as the default subject, unless the user specifies otherwise. If the user asks about 'it', 'that one', or uses another ambiguous reference, assume they mean the last iPhone model or topic mentioned. If you are unsure, politely ask the user to clarify.
+
+You have access to the full recent conversation history (as much as fits in the context window). Always use this context to answer follow-up questions and resolve references to previous answers or questions. If the conversation is long, prioritize the most recent exchanges for context.
+
+Answer questions only related to iPhone and Apple ecosystem and don't engage in anything else.
+"""
 
 def get_ai_response(user_message):
     api_key = os.getenv('PERPLEXITY_API_KEY')
@@ -99,7 +106,7 @@ def get_ai_response(user_message):
         for msg in st.session_state.messages
         if msg["role"] in ["user", "assistant"] and msg["content"].strip() != ""
     ]
-    filtered_history = filtered_history[-10:]
+    filtered_history = filtered_history[-100:]
     messages.extend(filtered_history)
     # Add the new user message (not yet in session state)
     if user_message.strip() != "":
@@ -108,7 +115,7 @@ def get_ai_response(user_message):
     payload = {
         "model": "llama-3.1-sonar-small-128k-online",
         "messages": messages,
-        "max_tokens": 500,
+        "max_tokens": 5000,
         "temperature": 0.2,
         "top_p": 0.9,
         "return_citations": True,
