@@ -92,12 +92,18 @@ def get_ai_response(user_message):
         "Content-Type": "application/json"
     }
     
+    # Build the full message history for context
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for msg in st.session_state.messages:
+        # Only allow 'user' and 'assistant' roles
+        if msg["role"] in ["user", "assistant"]:
+            messages.append({"role": msg["role"], "content": msg["content"]})
+    # Add the new user message
+    messages.append({"role": "user", "content": user_message})
+
     payload = {
         "model": "llama-3.1-sonar-small-128k-online",
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message}
-        ],
+        "messages": messages,
         "max_tokens": 500,
         "temperature": 0.2,
         "top_p": 0.9,
