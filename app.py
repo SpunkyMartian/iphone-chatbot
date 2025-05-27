@@ -92,13 +92,19 @@ def get_ai_response(user_message):
         "Content-Type": "application/json"
     }
     
-    # Build the full message history for context
+    # Build the full message history for context (limit to last 10 exchanges, filter out empty content)
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    for msg in st.session_state.messages:
-        if msg["role"] in ["user", "assistant"]:
-            messages.append({"role": msg["role"], "content": msg["content"]})
+    filtered_history = [
+        {"role": msg["role"], "content": msg["content"]}
+        for msg in st.session_state.messages
+        if msg["role"] in ["user", "assistant"] and msg["content"].strip() != ""
+    ]
+    # Only keep the last 10 messages
+    filtered_history = filtered_history[-10:]
+    messages.extend(filtered_history)
     # Add the new user message
-    messages.append({"role": "user", "content": user_message})
+    if user_message.strip() != "":
+        messages.append({"role": "user", "content": user_message})
 
     payload = {
         "model": "llama-3.1-sonar-small-128k-online",
