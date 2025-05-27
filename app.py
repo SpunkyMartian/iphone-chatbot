@@ -78,7 +78,8 @@ You can help with:
 - Security and privacy features
 - Tips and tricks for better iPhone usage
 
-Always provide accurate, helpful, and friendly responses. If unsure about something, say so rather than guessing. Keep responses concise but thorough."""
+Always provide accurate, helpful, and friendly responses. If unsure about something, say so rather than guessing. Keep responses concise but thorough.
+Answer questions only related to iPhone and Apple ecosystem and dont engage in anything else. """
 
 def get_ai_response(user_message):
     api_key = os.getenv('PERPLEXITY_API_KEY')
