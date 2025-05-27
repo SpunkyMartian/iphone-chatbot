@@ -144,4 +144,4 @@ if submitted and user_input:
     # Add AI response to chat
     st.session_state.messages.append({"role": "assistant", "content": ai_response})
     # Rerun to update chat display
-    st.experimental_rerun() 
+    st.rerun() 
