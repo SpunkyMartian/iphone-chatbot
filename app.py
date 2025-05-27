@@ -95,7 +95,6 @@ def get_ai_response(user_message):
     # Build the full message history for context
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     for msg in st.session_state.messages:
-        # Only allow 'user' and 'assistant' roles
         if msg["role"] in ["user", "assistant"]:
             messages.append({"role": msg["role"], "content": msg["content"]})
     # Add the new user message
