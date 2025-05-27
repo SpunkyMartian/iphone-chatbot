@@ -101,6 +101,7 @@ def get_ai_response(user_message):
     ]
     filtered_history = filtered_history[-10:]
     messages.extend(filtered_history)
+    # Add the new user message (not yet in session state)
     if user_message.strip() != "":
         messages.append({"role": "user", "content": user_message})
 
@@ -150,12 +151,12 @@ with st.form(key="chat_form", clear_on_submit=True):
     submitted = st.form_submit_button("Send")
 
 if submitted and user_input:
-    # Add user message to chat
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    # Get AI response
+    # Get AI response (do NOT add user message to session state yet)
     with st.spinner("Thinking..."):
         ai_response = get_ai_response(user_input)
-    # Add AI response to chat
-    st.session_state.messages.append({"role": "assistant", "content": ai_response})
-    # Rerun to update chat display
-    st.rerun() 
+    # Only add user and assistant messages if not an error
+    if not ai_response.startswith("Error: API request failed with status code 400"):
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        st.session_state.messages.append({"role": "assistant", "content": ai_response})
+        st.rerun()
+    # If there is a 400 error, do not rerun so the error and payload remain visible 
