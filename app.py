@@ -99,10 +99,8 @@ def get_ai_response(user_message):
         for msg in st.session_state.messages
         if msg["role"] in ["user", "assistant"] and msg["content"].strip() != ""
     ]
-    # Only keep the last 10 messages
     filtered_history = filtered_history[-10:]
     messages.extend(filtered_history)
-    # Add the new user message
     if user_message.strip() != "":
         messages.append({"role": "user", "content": user_message})
 
@@ -122,6 +120,9 @@ def get_ai_response(user_message):
         "presence_penalty": 0,
         "frequency_penalty": 1
     }
+
+    # Debug: Show the payload in the Streamlit app
+    st.write("Payload sent to Perplexity API:", payload)
     
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=30)
